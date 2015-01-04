@@ -12,19 +12,40 @@ void print(double x) {
 }
 
 int main() {
+
+	int a[] = { 0, 1, 2, 3, 4, 5 };
+	UnionFind<int> uf(a, 6);
+	for (int i = 0; i < 6; i++) {
+		cout << i << "belongs to " << uf.Find(i) << endl;
+	}
+	uf.Union(0, 5);
+	uf.Union(1, 4);
+	uf.Union(2, 3);
+	for (int i = 0; i < 6; i++) {
+		cout << i << "belongs to " << uf.Find(i) << endl;
+	}
+	uf.Union(0, 1);
+	uf.Union(2, 3);
+	uf.Union(3, 0);
+	for (int i = 0; i < 6; i++) {
+		cout << i << "belongs to " << uf.Find(i) << endl;
+	}
+	return 0;
+}
+int hashMain() {
 	cout << "hi" << endl;
 	HashTable<int> table;
-	for(int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		//cout << i << endl;
 		table.insert(i);
 	}
-	if(table.find(1)) {
+	if (table.find(1)) {
 		cout << "SUCCESS" << endl;
 	}
-	if(!table.find(10)) {
+	if (!table.find(10)) {
 		cout << "SUCCESS" << endl;
 	}
-	for(int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		//cout << i*100 << endl;
 		table.remove(i);
 	}

@@ -4,8 +4,8 @@
 template<class T>
 class UnionFind {
 public:
-	UnionFind(const T* data, int n);
-	T& Find(int x);
+	UnionFind(T* data, int n);
+	T Find(int x);
 	void Union(int x, int y);
 	~UnionFind();
 
@@ -16,27 +16,23 @@ private:
 		int size;	// size of the Node, -1 if not parent.
 		int parent;	// parent of the Node, -1 if current node is a parent.
 		T& data;
+		Node(int size, int parent, T& data) : size(size), parent(parent), data(data) {}
 	};
 	int n;			// number of Nodes
 	Node** elements;	// array of nodes
 };
 
 template<class T>
-UnionFind<T>::UnionFind(const T* data, int n) :
+UnionFind<T>::UnionFind(T* data, int n) :
 		n(n), elements(new Node*[n]) {
 	for (int i = 0; i < n; i++) {
-		// Node initialization
-		Node* tmp = new Node;
-		tmp->data = data[i];
-		tmp->parent = -1;
-		tmp->size = 1;
-
+		Node* tmp = new Node(1, -1, data[i]);
 		elements[i] = tmp;
 	}
 }
 
 template<class T>
-T& UnionFind<T>::Find(int x) {
+T UnionFind<T>::Find(int x) {
 	if (x < 0 || x >= n) {
 		throw IndexOutOfBounds();
 	}
@@ -59,11 +55,11 @@ void UnionFind<T>::Union(int x, int y) {
 	if(elements[xParent]->size > elements[yParent]->size) {
 		elements[xParent]->size += elements[yParent]->size;
 		elements[yParent]->size = -1;
-		elements[yParent]->parent = elements[xParent];
+		elements[yParent]->parent = xParent;
 	} else {
 		elements[yParent]->size += elements[xParent]->size;
 		elements[xParent]->size = -1;
-		elements[xParent]->parent = elements[yParent];
+		elements[xParent]->parent = yParent;
 	}
 }
 
