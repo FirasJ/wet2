@@ -110,10 +110,10 @@ public:
 	 */
 	~Planet();
 
-private:
-
 	class City;
 	class Citizen;
+
+private:
 
 	Tree<City> _cities;
 	HashTable<Citizen> _citizens;
