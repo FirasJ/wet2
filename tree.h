@@ -558,8 +558,10 @@ Tree<T>::Tree(int n) :
 	Node** ptrs = new Node*[n];
 	for (int i = 0; i < n; i++) {
 		ptrs[i] = new Node(T());
+		ptrs[i]->_right = ptrs[i]->_left = ptrs[i]->_parent = NULL;
 	}
 	_root = ptrs[0];
+	_root->_size = n;
 	for (int i = n - 1; i > 0; i--) {
 		// update fields: parent left right height bf size
 		// parent

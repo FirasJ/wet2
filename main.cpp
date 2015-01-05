@@ -55,7 +55,8 @@ int hashMain() {
 }
 
 int treeMain() {
-	Tree<double> tree;
+	Tree<int> tree(10);
+/*	Tree<double> tree;
 //	int x[10];
 	for (int i = 0; i < 10; ++i) {
 		//std::cin >> x[i];
@@ -73,5 +74,6 @@ int treeMain() {
 	}
 	//tree.preOrder(print);
 	//tree.inOrder(print);
+	*/
 	return 0;
 }
