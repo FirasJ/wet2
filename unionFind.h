@@ -17,6 +17,7 @@ public:
 	class IndexOutOfBounds: public std::exception {
 	};
 private:
+	int find(int x);
 	int n;			// number of Nodes
 	Node** elements;	// array of nodes
 };
@@ -51,17 +52,20 @@ UnionFind<T>::UnionFind(T data[], int n) :
 }
 
 template<class T>
-typename UnionFind<T>::Node* UnionFind<T>::Find(int x) {
+int UnionFind<T>::find(int x) {
 	if (x < 0 || x >= n) {
 		throw IndexOutOfBounds();
 	}
 	if (elements[x]->parent == -1) {
-		return elements[x];
+		return x;
 	} else {
-		Node* parentNode = Find(elements[x]->parent);
-		elements[x]->parent = parentNode->parent;
-		return parentNode;
+		return elements[x]->parent = find(elements[x]->parent);
 	}
+}
+
+template<class T>
+typename UnionFind<T>::Node* UnionFind<T>::Find(int x) {
+	return elements[find(x)];
 }
 
 template<class T>
@@ -69,8 +73,7 @@ void UnionFind<T>::Union(int x, int y) {
 	if (x < 0 || x >= n || y < 0 || y >= n) {
 		throw IndexOutOfBounds();
 	}
-	Node *xParentNode = Find(x), *yParentNode = Find(y);
-	int xParent = xParentNode->parent, yParent = yParentNode->parent;
+	int xParent = find(x), yParent = find(y);
 	if (xParent == yParent) { // x,y in same set
 		return;
 	}
