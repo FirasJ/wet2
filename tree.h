@@ -1,7 +1,7 @@
 #ifndef TREE_H_
 #define TREE_H_
 
-//#include <stdlib.h>		//
+#include <stdlib.h>		// NULL and size_t
 #include <cassert>		// assert()
 #include <exception>	// std::exception
 

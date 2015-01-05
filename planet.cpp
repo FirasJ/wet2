@@ -61,10 +61,6 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 	_cities.remove(tmpCity);
 	tmpCity._size++;
 	_cities.insert(tmpCity);
-//	City& c1 = _cities.find(tmpCity)->getData(); // city in AVL
-//	_cities.remove(c1);
-//	c1._size++;
-//	_cities.insert(c1);
 
 	citizen->joinCity(city);
 	return SUCCESS;
@@ -73,7 +69,7 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 StatusType Planet::JoinKingdoms(int city1, int city2) {
 	City *cap1 = _kingdoms.Find(city1)._capital;
 	City *cap2 = _kingdoms.Find(city2)._capital;
-	if (city1 != cap1->_id || city2 != cap2->_id) {
+	if (city1 != cap1->_id || city2 != cap2->_id || cap1->_id == cap2->_id) {
 		return FAILURE;
 	}
 	_kingdoms.Union(city1, city2);
@@ -102,10 +98,13 @@ StatusType Planet::GetCapital(int citizenID, int* capital) {
 
 StatusType Planet::SelectCity(int k, int* city) {
 	assert(city);
-	if (k >= _size || k < 0) {
+	if (k < 0) {
 		return INVALID_INPUT;
 	}
-	*city = _cities.select(k+1)._id;
+	if (k >= _size) {
+		return FAILURE;
+	}
+	*city = _cities.select(k + 1)._id;
 	return SUCCESS;
 }
 
