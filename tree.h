@@ -87,7 +87,7 @@ public:
 	/*
 	 * Retuns the k-th element in the tree.
 	 */
-	const T& select(int k) const;
+	const T& select(unsigned int k) const;
 	Node* selectAux(Node* node, int k) const;
 	/* deletes all the data stored in the tree.
 	 * Time complexity : O(n)
@@ -169,7 +169,7 @@ public:
 					node._parent), _height(node._height), _balanceFactor(
 					node._balanceFactor), _size(node._size) {
 	}
-	const T& getData() {
+	T& getData() {
 		return _data;
 	}
 private:
@@ -258,7 +258,7 @@ inline size_t Tree<T>::size() const {
 }
 
 template<class T>
-const T& Tree<T>::select(int k) const {
+const T& Tree<T>::select(unsigned int k) const {
 	if (size() == 0 || size() < k) {
 		throw TreeIsEmpty();
 	}

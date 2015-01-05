@@ -115,7 +115,7 @@ public:
 
 private:
 	int _size;
-	Tree<City*> _cities;
+	Tree<City> _cities;
 	HashTable<Citizen> _citizens;
 	UnionFind<City*> _kingdoms;
 
@@ -127,6 +127,8 @@ public:
 	City(int id);
 	friend bool operator<(const City& city1, const City& city2);
 	friend bool operator==(const City& city1, const City& city2);
+	friend class TreeToArray;
+	friend class Planet;
 private:
 	int _id;
 	int _size;

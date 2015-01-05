@@ -1,14 +1,13 @@
 #include "planet.h"
 
 class FillTree {
-	Tree<Planet::City*>& tree;
-	Planet::City** cities;
+	Planet::City* cities;
 	int index;
 public:
-	FillTree(Tree<Planet::City*>& tree, Planet::City** cities) :
-			tree(tree), cities(cities), index(0) {
+	FillTree(Tree<Planet::City>& tree, Planet::City* cities) :
+			cities(cities), index(0) {
 	}
-	void operator()(Planet::City*& city) {
+	void operator()(Planet::City& city) {
 		city = cities[index];
 		index++;
 	}
@@ -16,9 +15,9 @@ public:
 
 Planet::Planet(int n) :
 		_size(n), _cities(n) {
-	City** cities = new City*[n];
+	City* cities = new City[n];
 	for (int i = 0; i < n; ++i) {
-		cities[i] = new City(i);
+		cities[i] = City(i);
 	}
 	_kingdoms = UnionFind<City*>(cities, n);
 	FillTree func(_cities, cities);
@@ -40,10 +39,11 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 		return INVALID_INPUT;
 	}
 	Citizen* citizen = _citizens.find(Citizen(citizenID));
-	if(citizen->inCity()) {
+	if (citizen == NULL || citizen->inCity()) {
 		return FAILURE;
 	}
 	citizen->joinCity(city);
+
 	City* c = _kingdoms.Find(city);
 	_cities.remove(c);
 	c->_size++;
@@ -64,10 +64,10 @@ StatusType Planet::GetCapital(int citizenID, int* capital) {
 
 StatusType Planet::SelectCity(int k, int* city) {
 	assert(city);
-	if(k >= _size) {
+	if (k >= _size) {
 		return INVALID_INPUT;
 	}
-	*city = _cities.select(k)->_id;
+	*city = _cities.select(k)._id;
 	return SUCCESS;
 }
 
@@ -76,7 +76,7 @@ class TreeToArray {
 	int index;
 public:
 	TreeToArray(int results[]) :
-		results(results), index(0) {
+			results(results), index(0) {
 	}
 	void operator()(const Planet::City* data) {
 		results[index++] = data->_id;

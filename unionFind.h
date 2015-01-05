@@ -4,28 +4,37 @@
 template<class T>
 class UnionFind {
 public:
+
+	class Node;
+
 	UnionFind();
 	UnionFind(T data[], int n);
 	UnionFind& operator=(const UnionFind& uf);
-	T Find(int x);
+	UnionFind::Node* Find(int x);
 	void Union(int x, int y);
 	~UnionFind();
 
-	class IndexOutOfBounds : public std::exception {
+	class IndexOutOfBounds: public std::exception {
 	};
 private:
-	struct Node {
-		int size;	// size of the Node, -1 if not parent.
-		int parent;	// parent of the Node, -1 if current node is a parent.
-		T& data;
-		Node(int size, int parent, T& data) :
-				size(size), parent(parent), data(data) {
-		}
-		Node(const Node& n) : size(n.size), parent(n.parent), data(n.data) {
-		}
-	};
 	int n;			// number of Nodes
 	Node** elements;	// array of nodes
+};
+
+template<class T>
+class UnionFind<T>::Node {
+public:
+	Node(int size, int parent, T& data) :
+			size(size), parent(parent), data(data) {
+	}
+	Node(const Node& n) :
+			size(n.size), parent(n.parent), data(n.data) {
+	}
+	friend class UnionFind;
+private:
+	int size;	// size of the Node, -1 if not parent.
+	int parent;	// parent of the Node, -1 if current node is a parent.
+	T& data;
 };
 
 template<class T>
@@ -42,14 +51,16 @@ UnionFind<T>::UnionFind(T data[], int n) :
 }
 
 template<class T>
-T UnionFind<T>::Find(int x) {
+typename UnionFind<T>::Node* UnionFind<T>::Find(int x) {
 	if (x < 0 || x >= n) {
 		throw IndexOutOfBounds();
 	}
 	if (elements[x]->parent == -1) {
-		return x;
+		return elements[x];
 	} else {
-		return elements[x]->parent = Find(elements[x]->parent);
+		Node* parentNode = Find(elements[x]->parent);
+		elements[x]->parent = parentNode->parent;
+		return parentNode;
 	}
 }
 
@@ -58,7 +69,8 @@ void UnionFind<T>::Union(int x, int y) {
 	if (x < 0 || x >= n || y < 0 || y >= n) {
 		throw IndexOutOfBounds();
 	}
-	int xParent = Find(x), yParent = Find(y);
+	Node *xParentNode = Find(x), *yParentNode = Find(y);
+	int xParent = xParentNode->parent, yParent = yParentNode->parent;
 	if (xParent == yParent) { // x,y in same set
 		return;
 	}

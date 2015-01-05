@@ -32,16 +32,18 @@ private:
 	int hash(const T& data, HashFunction& hashFucntion) const ;
 	void realocateTable(size_t newSize);
 	class InsertToNewTable;
+	class Modulo;
 
 };
 
-class Modulo {
+template<class T>
+class HashTable<T>::Modulo {
 public:
 	Modulo(int mod) :
 			_mod(mod) {
 	}
-	int operator()(int number) {
-		return number % _mod;
+	int operator()(const T& data) {
+		return data % _mod;
 	}
 private:
 	int _mod;
@@ -76,7 +78,7 @@ HashTable<T>::~HashTable() {
 template<class T>
 void HashTable<T>::insert(const T& data) {
 	try {
-		Modulo modulo(_tableSize);
+		HashTable<T>::Modulo modulo(_tableSize);
 		_table[hash(data, modulo)]->insert(data);
 		_size++;
 		if (_size == _tableSize) {
@@ -90,7 +92,7 @@ void HashTable<T>::insert(const T& data) {
 template<class T>
 void HashTable<T>::remove(const T& data) {
 	try {
-		Modulo modulo(_tableSize);
+		HashTable<T>::Modulo modulo(_tableSize);
 		_table[this->hash(data, modulo)]->remove(data);
 		_size--;
 		if (_size == _tableSize / 4) {
@@ -105,7 +107,7 @@ void HashTable<T>::remove(const T& data) {
 
 template<class T>
 T* HashTable<T>::find(const T& data) const {
-	Modulo modulo(_tableSize);
+	HashTable<T>::Modulo modulo(_tableSize);
 	Tree<T> *tree = _table[this->hash(data, modulo)];
 	try {
 		if (tree->find(data)->getData() == data) {
