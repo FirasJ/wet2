@@ -259,7 +259,7 @@ inline size_t Tree<T>::size() const {
 
 template<class T>
 const T& Tree<T>::select(int k) const {
-	if(size() == 0 || size() < k) {
+	if (size() == 0 || size() < k) {
 		throw TreeIsEmpty();
 	}
 	return selectAux(_root, k)->_data;
@@ -267,16 +267,16 @@ const T& Tree<T>::select(int k) const {
 
 template<class T>
 typename Tree<T>::Node* Tree<T>::selectAux(Node* node, int k) const {
-	int size=0;
-	if(node->_left) {
+	int size = 0;
+	if (node->_left) {
 		size = node->_left->_size;
 	}
-	if(size == k-1) {
+	if (size == k - 1) {
 		return node;
-	} else if(size > k-1) {
+	} else if (size > k - 1) {
 		return selectAux(node->_left, k);
 	} else { //if(size < k-1)
-		return selectAux(node->_right, k-size-1);
+		return selectAux(node->_right, k - size - 1);
 	}
 }
 
@@ -545,22 +545,22 @@ void Tree<T>::updateHeight(Node* node) {
 	node->_height = 1 + (left > right ? left : right);
 }
 /*
-template<class T>
-void Tree<T>::update(Node* leaf) {
-	Node* tmpNode = leaf;
-	while (tmpNode) {
-		updateHeight(tmpNode->_parent);
-		tmpNode = tmpNode->_parent;
-	}
-	while (tmpNode) {
-		updateBalanceFactor(tmpNode->_parent);
-		tmpNode = tmpNode->_parent;
-	}
-}
-*/
+ template<class T>
+ void Tree<T>::update(Node* leaf) {
+ Node* tmpNode = leaf;
+ while (tmpNode) {
+ updateHeight(tmpNode->_parent);
+ tmpNode = tmpNode->_parent;
+ }
+ while (tmpNode) {
+ updateBalanceFactor(tmpNode->_parent);
+ tmpNode = tmpNode->_parent;
+ }
+ }
+ */
 template<class T>
 void Tree<T>::fixSizes(Node* node, const T& data, int diff) {
-	if(node) {
+	if (node) {
 		node->_size += diff;
 	}
 	if (node->_data > data && node->_left) {
@@ -572,20 +572,20 @@ void Tree<T>::fixSizes(Node* node, const T& data, int diff) {
 }
 
 template<class T>
-Tree<T>::Tree(int n) : _root(0), _size(n) {
-	Node* ptrs = new Node[n];
-	for(int i=0; i<n; i++) {
-		Node* n = new Node(T());
-		ptrs[i]=n;
+Tree<T>::Tree(int n) :
+		_root(0), _size(n) {
+	Node** ptrs = new Node*[n];
+	for (int i = 0; i < n; i++) {
+		ptrs[i] = new Node(T());
 	}
 	_root = ptrs[0];
-	for(int i=n-1; i>=0; i++) {
+	for (int i = n - 1; i >= 0; i++) {
 		// update fields: parent left right height bf size
 		// parent
-		Node* parent = ptrs[(i-1)/2];
+		Node* parent = ptrs[(i - 1) / 2];
 		ptrs[i]->_parent = parent;
 		// left & right
-		if(i%2 == 0) {
+		if (i % 2 == 0) {
 			parent->_right = ptrs[i];
 		} else {
 			parent->_left = ptrs[i];

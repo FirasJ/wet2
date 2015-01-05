@@ -18,7 +18,7 @@ public:
 	~HashTable();
 	void insert(const T& data);
 	void remove(const T& data);
-	bool find(const T& data) const;
+	T* find(const T& data) const;
 	size_t size() const;
 
 private:
@@ -77,7 +77,7 @@ template<class T>
 void HashTable<T>::insert(const T& data) {
 	try {
 		Modulo modulo(_tableSize);
-		_table[this->hash(data, modulo)]->insert(data);
+		_table[hash(data, modulo)]->insert(data);
 		_size++;
 		if (_size == _tableSize) {
 			realocateTable(_tableSize * 2);
@@ -104,17 +104,17 @@ void HashTable<T>::remove(const T& data) {
 }
 
 template<class T>
-bool HashTable<T>::find(const T& data) const {
+T* HashTable<T>::find(const T& data) const {
 	Modulo modulo(_tableSize);
 	Tree<T> *tree = _table[this->hash(data, modulo)];
 	try {
 		if (tree->find(data)->getData() == data) {
-			return true;
+			return &(tree->find(data)->getData());
 		}
 	} catch (typename Tree<T>::TreeIsEmpty &e) {
-		return false;
+		return NULL;
 	}
-	return false;
+	return NULL;
 }
 
 template<class T>
