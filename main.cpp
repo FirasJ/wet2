@@ -12,7 +12,7 @@ void print(double x) {
 }
 
 int UFmain() {
-/*
+
 	int a[] = { 0, 1, 2, 3, 4, 5 };
 	UnionFind<int> uf(6, a);
 	for (int i = 0; i < 6; i++) {
@@ -30,7 +30,7 @@ int UFmain() {
 	for (int i = 0; i < 6; i++) {
 		cout << i << "belongs to " << uf.Find(i) << endl;
 	}
-	*/
+
 	return 0;
 }
 int hashMain() {

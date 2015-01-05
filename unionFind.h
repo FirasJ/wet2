@@ -43,6 +43,9 @@ private:
 template<class T>
 UnionFind<T>::UnionFind(int n) :
 		n(n), elements(new Node*[n]) {
+	for(int i=0; i<n; i++) {
+		elements[i] = NULL;
+	}
 }
 
 template<class T>
@@ -103,15 +106,22 @@ UnionFind<T>& UnionFind<T>::operator =(const UnionFind& uf) {
 	Node** nodes = new Node*[n];
 	try {
 		for (int i = 0; i < uf.n; i++) {
-			//nodes[i] = new Node(*elements[i]);
-			nodes[i] = new Node(*elements[i]);
+			nodes[i] = new Node(*(uf.elements[i]));
 		}
 	} catch (...) {
+		for (int i = 0; i < uf.n; i++) {
+			if (nodes[i] != NULL) {
+				delete nodes[i];
+			}
+		}
 		delete[] nodes;
 		throw;
 	}
 	for (int i = 0; i < n; i++) {
-		delete elements[i];
+		if (elements[i] != NULL) {
+			delete elements[i];
+		}
+
 	}
 	delete[] elements;
 	elements = nodes;

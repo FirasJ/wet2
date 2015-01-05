@@ -118,13 +118,14 @@ private:
 	Tree<City> _cities;
 	HashTable<Citizen> _citizens;
 	UnionFind<City> _kingdoms;
+	City* array;
 
 };
 
 class Planet::City {
 public:
 	City();
-	City(int id);
+	City(int id, int size=0);
 	friend bool operator<(const City& city1, const City& city2);
 	friend bool operator==(const City& city1, const City& city2);
 	friend class TreeToArray;

@@ -15,14 +15,13 @@ public:
 Planet::Planet(int n) :
 		_size(n), _cities(n), _kingdoms(n) {
 	City* cities = new City[n];
+	array = cities;
 	for (int i = 0; i < n; ++i) {
 		cities[i] = City(i);
 	}
 	_kingdoms = UnionFind<City>(n, cities);
 	FillTree func(cities);
 	_cities.inOrder(func);
-
-	delete[] cities;
 }
 
 StatusType Planet::AddCitizen(int citizenID) {
@@ -38,24 +37,26 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 		return INVALID_INPUT;
 	}
 	Citizen* citizen = _citizens.find(Citizen(citizenID));
-	if (citizen == NULL || citizen->inCity() != city) {
+	if (citizen == NULL || (citizen->inCity() != -1 && citizen->inCity() != city)) {
 		return FAILURE;
 	}
 	if(citizen->inCity() == city) {
 		return SUCCESS;
 	}
-	City c1 = _cities.find(city)->getData(); // city in AVL
-	_cities.remove(c1);
-	c1._size++;
-	_cities.insert(c1);
 
 	City c2 = _kingdoms.get(city); // city in UnionFind
+	City tmpCity(c2._id, c2._size);
 	c2._size++;
 	City kingdom = _kingdoms.Find(city); // kingdom of city
 
 	if( *(kingdom._capital) < c2) {
 		kingdom._capital = &c2;
 	}
+
+	City& c1 = _cities.find(tmpCity)->getData(); // city in AVL
+	_cities.remove(c1);
+	c1._size++;
+	_cities.insert(c1);
 
 	citizen->joinCity(city);
 	return SUCCESS;
@@ -111,15 +112,15 @@ StatusType Planet::GetCitiesBySize(int results[]) {
 }
 
 Planet::~Planet() {
-
+	delete[] array;
 }
 
 Planet::City::City() :
 		_id(-1), _size(0), _capital(this) {
 }
 
-Planet::City::City(int id) :
-		_id(id), _size(0), _capital(this) {
+Planet::City::City(int id, int size) :
+		_id(id), _size(size), _capital(this) {
 }
 
 bool operator<(const Planet::City& city1, const Planet::City& city2) {
@@ -138,7 +139,7 @@ bool operator>(const Planet::City& city1, const Planet::City& city2) {
 }
 
 bool operator==(const Planet::City& city1, const Planet::City& city2) {
-	return (city1._size == city2._size) && (city1._id == city2._id);
+	return city1._id == city2._id;
 }
 
 bool operator!=(const Planet::City& city1, const Planet::City& city2) {
