@@ -13,12 +13,12 @@ public:
 };
 
 Planet::Planet(int n) :
-		_size(n), _cities(n) {
+		_size(n), _cities(n), _kingdoms(n) {
 	City* cities = new City[n];
 	for (int i = 0; i < n; ++i) {
 		cities[i] = City(i);
 	}
-	_kingdoms = UnionFind<City>(cities, n);
+	_kingdoms = UnionFind<City>(n, cities);
 	FillTree func(cities);
 	_cities.inOrder(func);
 
@@ -53,7 +53,7 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 	c2._size++;
 	City kingdom = _kingdoms.Find(city); // kingdom of city
 
-	if(c2 > *(kingdom._capital)) {
+	if( *(kingdom._capital) < c2) {
 		kingdom._capital = &c2;
 	}
 
@@ -65,12 +65,8 @@ StatusType Planet::JoinKingdoms(int city1, int city2) {
 	City cap1 = *(_kingdoms.Find(city1)._capital);
 	City cap2 = *(_kingdoms.Find(city2)._capital);
 	_kingdoms.Union(city1, city2);
-	City kingdom = _kingdoms.Find(city1);
-	if(cap2 < cap1) {
-		kingdom._capital = &cap1;
-	} else {
-		kingdom._capital = &cap2;
-	}
+	City& kingdom = _kingdoms.Find(city1);
+	kingdom._capital = (cap2 < cap1) ? &cap1 : &cap2;
 	return SUCCESS;
 }
 
@@ -137,16 +133,16 @@ bool operator<(const Planet::City& city1, const Planet::City& city2) {
 	return false;
 }
 
+bool operator>(const Planet::City& city1, const Planet::City& city2) {
+	return city2 < city1;
+}
+
 bool operator==(const Planet::City& city1, const Planet::City& city2) {
 	return (city1._size == city2._size) && (city1._id == city2._id);
 }
 
 bool operator!=(const Planet::City& city1, const Planet::City& city2) {
 	return !(city1 == city2);
-}
-
-bool operator>(const Planet::City& city1, const Planet::City& city2) {
-	return city2 < city1;
 }
 
 Planet::Citizen::Citizen(int id) :

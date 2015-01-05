@@ -7,8 +7,8 @@ public:
 
 	class Node;
 
-	UnionFind();
-	UnionFind(T data[], int n);
+	UnionFind(int n);
+	UnionFind(int n, T* data);
 	UnionFind& operator=(const UnionFind& uf);
 	T& Find(int x); // returns root
 	T& get(int x) const; // returns elements[x]
@@ -19,6 +19,7 @@ public:
 	};
 private:
 	int find(int x);
+
 	int n;			// number of Nodes
 	Node** elements;	// array of nodes
 };
@@ -40,12 +41,12 @@ private:
 };
 
 template<class T>
-UnionFind<T>::UnionFind() :
-		n(0), elements(NULL) {
+UnionFind<T>::UnionFind(int n) :
+		n(n), elements(new Node*[n]) {
 }
 
 template<class T>
-UnionFind<T>::UnionFind(T data[], int n) :
+UnionFind<T>::UnionFind(int n, T* data) :
 		n(n), elements(new Node*[n]) {
 	for (int i = 0; i < n; i++) {
 		elements[i] = new Node(1, -1, data[i]);
@@ -102,6 +103,7 @@ UnionFind<T>& UnionFind<T>::operator =(const UnionFind& uf) {
 	Node** nodes = new Node*[n];
 	try {
 		for (int i = 0; i < uf.n; i++) {
+			//nodes[i] = new Node(*elements[i]);
 			nodes[i] = new Node(*elements[i]);
 		}
 	} catch (...) {

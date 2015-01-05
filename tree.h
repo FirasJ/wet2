@@ -560,7 +560,7 @@ Tree<T>::Tree(int n) :
 		ptrs[i] = new Node(T());
 	}
 	_root = ptrs[0];
-	for (int i = n - 1; i >= 0; i++) {
+	for (int i = n - 1; i > 0; i--) {
 		// update fields: parent left right height bf size
 		// parent
 		Node* parent = ptrs[(i - 1) / 2];

@@ -134,10 +134,10 @@ private:
 	int _size;
 	City* _capital;
 };
-/*
+
 bool operator!=(const typename Planet::City& city1, const typename Planet::City& city2);
 bool operator<(const Planet::City& city1, const Planet::City& city2);
-*/
+
 class Planet::Citizen {
 public:
 	Citizen(int id);
@@ -150,8 +150,8 @@ private:
 	int _id;
 	int _city;
 };
-/*
+
 bool operator>(const Planet::Citizen& citizen1, const Planet::Citizen& citizen2);
 bool operator!=(const Planet::Citizen& citizen1, const Planet::Citizen& citizen2);
-*/
+
 #endif /* PLANET_H_ */
