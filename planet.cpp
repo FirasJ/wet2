@@ -4,12 +4,11 @@ class FillTree {
 	Planet::City* cities;
 	int index;
 public:
-	FillTree(Tree<Planet::City>& tree, Planet::City* cities) :
+	FillTree(Planet::City* cities) :
 			cities(cities), index(0) {
 	}
 	void operator()(Planet::City& city) {
-		city = cities[index];
-		index++;
+		city = cities[index++];
 	}
 };
 
@@ -19,8 +18,8 @@ Planet::Planet(int n) :
 	for (int i = 0; i < n; ++i) {
 		cities[i] = City(i);
 	}
-	_kingdoms = UnionFind<City*>(cities, n);
-	FillTree func(_cities, cities);
+	_kingdoms = UnionFind<City>(cities, n);
+	FillTree func(cities);
 	_cities.inOrder(func);
 
 	delete[] cities;
@@ -39,26 +38,51 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 		return INVALID_INPUT;
 	}
 	Citizen* citizen = _citizens.find(Citizen(citizenID));
-	if (citizen == NULL || citizen->inCity()) {
+	if (citizen == NULL || citizen->inCity() != city) {
 		return FAILURE;
 	}
+	if(citizen->inCity() == city) {
+		return SUCCESS;
+	}
+	City c1 = _cities.find(city)->getData(); // city in AVL
+	_cities.remove(c1);
+	c1._size++;
+	_cities.insert(c1);
+
+	City c2 = _kingdoms.get(city); // city in UnionFind
+	c2._size++;
+	City kingdom = _kingdoms.Find(city); // kingdom of city
+
+	if(c2 > *(kingdom._capital)) {
+		kingdom._capital = &c2;
+	}
+
 	citizen->joinCity(city);
-
-	City* c = _kingdoms.Find(city);
-	_cities.remove(c);
-	c->_size++;
-	_cities.insert(c);
-
 	return SUCCESS;
 }
 
 StatusType Planet::JoinKingdoms(int city1, int city2) {
-	// TODO
+	City cap1 = *(_kingdoms.Find(city1)._capital);
+	City cap2 = *(_kingdoms.Find(city2)._capital);
+	_kingdoms.Union(city1, city2);
+	City kingdom = _kingdoms.Find(city1);
+	if(cap2 < cap1) {
+		kingdom._capital = &cap1;
+	} else {
+		kingdom._capital = &cap2;
+	}
 	return SUCCESS;
 }
 
 StatusType Planet::GetCapital(int citizenID, int* capital) {
-	// TODO
+	assert(capital);
+	Citizen* citizen = _citizens.find(Citizen(citizenID));
+	if (citizen == NULL) {
+		return FAILURE;
+	}
+	int city = citizen->inCity();
+	City c = *(_kingdoms.Find(city)._capital);
+	*capital = c._id;
 	return SUCCESS;
 }
 
@@ -78,8 +102,8 @@ public:
 	TreeToArray(int results[]) :
 			results(results), index(0) {
 	}
-	void operator()(const Planet::City* data) {
-		results[index++] = data->_id;
+	void operator()(const Planet::City& data) {
+		results[index++] = data._id;
 	}
 };
 
@@ -91,7 +115,7 @@ StatusType Planet::GetCitiesBySize(int results[]) {
 }
 
 Planet::~Planet() {
-	// TODO
+
 }
 
 Planet::City::City() :
@@ -124,19 +148,6 @@ bool operator!=(const Planet::City& city1, const Planet::City& city2) {
 bool operator>(const Planet::City& city1, const Planet::City& city2) {
 	return city2 < city1;
 }
-
-/*
- bool operator>(const Planet::City& city1, const Planet::City& city2) {
- if (city1._size > city2._size)
- return true;
- if (city1._size == city2._size) {
- if (city1._id < city2._id) {
- return true;
- }
- }
- return false;
- }
- */
 
 Planet::Citizen::Citizen(int id) :
 		_id(id), _city(-1) {

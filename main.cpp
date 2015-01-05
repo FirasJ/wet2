@@ -11,7 +11,7 @@ void print(double x) {
 	std::cout << x << " ";
 }
 
-int main() {
+int UFmain() {
 
 	int a[] = { 0, 1, 2, 3, 4, 5 };
 	UnionFind<int> uf(a, 6);

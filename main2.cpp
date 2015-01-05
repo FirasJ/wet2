@@ -112,7 +112,7 @@ string PrintIntArray(const int* arr, int size) {
 /* main                                                                    */
 /***************************************************************************/
 
-int main2(int argc, const char**argv) {
+int main(int argc, const char**argv) {
   char buffer[MAX_STRING_INPUT_SIZE];
   // Reading commands
   while ( fgets(buffer, MAX_STRING_INPUT_SIZE, stdin) != NULL ) {

@@ -133,10 +133,6 @@ private:
 	void updateBalanceFactor(Node* node);
 	// A helping function to update the height of @node.
 	void updateHeight(Node* node);
-	// A helping function that updates the height and balance factor of all the
-	// nodes starting from @leaf all the way up to the root.
-	// Time complexity: O(n)
-	//void update(Node* leaf);
 	// A recursive utility function to find @data starting from @node
 	Tree<T>::Node* findAux(Node* node, const T& data) const;
 	// An utility function to remove a @node that has no more than one son
@@ -222,8 +218,6 @@ void Tree<T>::insert(const T& data) {
 			Node* son = tmpNode;
 			tmpNode = tmpNode->_parent;
 			updateBalanceFactor(tmpNode);
-			if (tmpNode->_height >= son->_height + 1)
-				return;
 			if (tmpNode->_height >= son->_height + 1)
 				return;
 			updateHeight(tmpNode);
@@ -544,20 +538,7 @@ void Tree<T>::updateHeight(Node* node) {
 	int left = node->_left ? node->_left->_height : -1;
 	node->_height = 1 + (left > right ? left : right);
 }
-/*
- template<class T>
- void Tree<T>::update(Node* leaf) {
- Node* tmpNode = leaf;
- while (tmpNode) {
- updateHeight(tmpNode->_parent);
- tmpNode = tmpNode->_parent;
- }
- while (tmpNode) {
- updateBalanceFactor(tmpNode->_parent);
- tmpNode = tmpNode->_parent;
- }
- }
- */
+
 template<class T>
 void Tree<T>::fixSizes(Node* node, const T& data, int diff) {
 	if (node) {

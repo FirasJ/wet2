@@ -10,7 +10,8 @@ public:
 	UnionFind();
 	UnionFind(T data[], int n);
 	UnionFind& operator=(const UnionFind& uf);
-	UnionFind::Node* Find(int x);
+	T& Find(int x); // returns root
+	T& get(int x) const; // returns elements[x]
 	void Union(int x, int y);
 	~UnionFind();
 
@@ -52,6 +53,11 @@ UnionFind<T>::UnionFind(T data[], int n) :
 }
 
 template<class T>
+T& UnionFind<T>::get(int x) const {
+	return elements[x]->data;
+}
+
+template<class T>
 int UnionFind<T>::find(int x) {
 	if (x < 0 || x >= n) {
 		throw IndexOutOfBounds();
@@ -64,8 +70,8 @@ int UnionFind<T>::find(int x) {
 }
 
 template<class T>
-typename UnionFind<T>::Node* UnionFind<T>::Find(int x) {
-	return elements[find(x)];
+T& UnionFind<T>::Find(int x) {
+	return elements[find(x)]->data;
 }
 
 template<class T>

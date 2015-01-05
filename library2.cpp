@@ -42,7 +42,9 @@ StatusType JoinKingdoms(void* DS, int city1, int city2) {
 
 StatusType GetCapital(void* DS, int citizenID, int* capital) {
 	CHECK_NULL(DS);
-
+	if(!capital || citizenID < 0) {
+		return INVALID_INPUT;
+	}
 	try {
 		return ((Planet*) DS)->GetCapital(citizenID, capital);
 	} catch (std::bad_alloc& e) {
