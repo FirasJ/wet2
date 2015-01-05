@@ -102,10 +102,10 @@ StatusType Planet::GetCapital(int citizenID, int* capital) {
 
 StatusType Planet::SelectCity(int k, int* city) {
 	assert(city);
-	if (k >= _size) {
+	if (k >= _size || k < 0) {
 		return INVALID_INPUT;
 	}
-	*city = _cities.select(k)._id;
+	*city = _cities.select(k+1)._id;
 	return SUCCESS;
 }
 
