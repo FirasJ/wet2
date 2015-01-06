@@ -1,29 +1,71 @@
 #ifndef UNIONFIND_H_
 #define UNIONFIND_H_
 
+/*
+ * Class Union Find:
+ * This class stores N unique elements and provides the following functionalities:
+ * Find(x) : Given an index x, returns the set to which element[i] belongs.
+ * get(x) : Given an index x, returns the element[i].
+ * Union(x, y): Given two indices, merges the sets to which they belong to 1 set.
+ * This class is implemented using UpTrees (as arrays), Union by size and path compression
+ * Therefore, Find and Union takes O(log* n)
+ */
+
 template<class T>
 class UnionFind {
 public:
-
-	class Node;
-
-	UnionFind(int n);
+	/* Initializes an empty UnionFind class with size n
+	 * Time Complexity: O(n)
+	 */
+	explicit UnionFind(int n);
+	/* Initializes a UnionFind class with the array data and size n
+	 * Time Complexity: O(n)
+	 */
 	UnionFind(int n, T* data);
+	/* Operator assignement
+	 * Time Complexity: O(n)
+	 */
 	UnionFind& operator=(const UnionFind& uf);
-	T& Find(int x); // returns root
-	T& get(int x) const; // returns elements[x]
+	/* Given an index x, returns the set to which element[x] belongs.
+	 * Using UpTrees and path compression
+	 * @throw IndexOutOfBounds
+	 * Time Complexity: O(log* n)
+	 */
+	T& Find(int x);
+	/* Given an index x, returns the element[x]
+	 * Time Complexity: O(1)
+	 */
+	T& get(int x) const;
+	/* Given two indices, merges the sets to which they belong to 1 set.
+	 * Using UpTrees and union by size.
+	 * @throw IndexOutOfBounds
+	 * Time Complexity: O(log* n)
+	 */
 	void Union(int x, int y);
+	/* class Destructor
+	 * Time complexity: O(n)
+	 */
 	~UnionFind();
 
+	class Node;
+	/* Exception thrown by UnionFind */
 	class IndexOutOfBounds: public std::exception {
 	};
 private:
+	/* Recursive aux function that returns the index of the UpTree root
+	 * to which element[x] belongs.
+	 */
 	int find(int x);
 
-	int n;			// number of Nodes
+	int n;			// number of Nodes (elements)
 	Node** elements;	// array of nodes
 };
 
+/* Class Node
+ * Implements a Node in the UpTree containing the data of each Node,
+ * the parent of the Node (-1 if Node is a root)
+ * and the size of the UpTree if Node is a root (-1 otherwise).
+ */
 template<class T>
 class UnionFind<T>::Node {
 public:
@@ -35,7 +77,7 @@ public:
 	}
 	friend class UnionFind;
 private:
-	int size;	// size of the Node, -1 if not parent.
+	int size;	// size of the Node, -1 if not root.
 	int parent;	// parent of the Node, -1 if current node is a parent.
 	T& data;
 };

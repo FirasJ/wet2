@@ -27,7 +27,8 @@ public:
 	 */
 	Tree();
 	/*
-	 *
+	 * Creates an empty almost-full AVL tree.
+	 * Time Complexity: O(n)
 	 */
 	explicit Tree(int n);
 	/* virtual destructor : clears the objects in the tree and deletes the data
@@ -84,11 +85,10 @@ public:
 	 * Time complexity : O(log n)
 	 */
 	Node* getMax() const;
-	/*
-	 * Retuns the k-th element in the tree.
+	/* Retuns the k-th element in the tree.
+	 * Time Complexity: O(log n)
 	 */
 	const T& select(unsigned int k) const;
-	Node* selectAux(Node* node, int k) const;
 	/* deletes all the data stored in the tree.
 	 * Time complexity : O(n)
 	 */
@@ -147,9 +147,17 @@ private:
 	Node* getFollowing(Node* node);
 	// An utility function that swaps the data between two given nodes
 	void swapNodes(Node* node, Node* next);
-
+	/* A helping function that starts from @node untill it reaches @data and
+	 * adds @diff to each node's _size in the way.
+	 * Time complexity : O(log n)
+	 */
 	void fixSizes(Node* node, const T& data, int diff);
+	// A helping function to update the _size of @node.
 	void updateSize(Node* node);
+	/* Recursive helping function to return the k-th element in the tree.
+	 * Time complexity : O(log n)
+	 */
+	Node* selectAux(Node* node, int k) const;
 };
 
 template<class T>

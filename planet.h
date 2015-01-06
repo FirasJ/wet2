@@ -122,6 +122,16 @@ private:
 
 };
 
+/* Class City:
+ * This class represents a City in the Planet.
+ * @_id represents the ID of the city.
+ * @_size represents the number of citizens in the city.
+ * @_capital represents the capital of the kingdom to which the city belongs
+ * 		this field is only valid if the city is the root in the UnionFind.
+ * The implementation of operators < > == != allow the use of this class
+ * in our AVL tree in such a way that the nodes will be sorted according
+ * to the number of the citizens primarily and the ID secondary.
+ */
 class Planet::City {
 public:
 	City();
@@ -139,6 +149,14 @@ private:
 bool operator!=(const typename Planet::City& city1, const typename Planet::City& city2);
 bool operator<(const Planet::City& city1, const Planet::City& city2);
 
+/* Class Citizen:
+ * This class represents a Citizen in the Planet.
+ * @_id is the ID of the citizen.
+ * @_city is the city to which the citizen belongs (or -1 if he's not in a city)
+ * The implementation of operators < > == != allow the use of this class
+ * in our Hash Table in such a way that the nodes will be sorted according
+ * to the ID.
+ */
 class Planet::Citizen {
 public:
 	Citizen(int id);

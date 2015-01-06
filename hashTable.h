@@ -3,10 +3,15 @@
 
 #include "tree.h"
 
+/* Class HashTable
+ * This data structure maps keys to values using a Modulo as the hash function
+ * dynamic allocation for the array, Chain Hashing technique along with and
+ * AVL Trees as the chains in each slot (bucket).
+ */
 template<class T>
 class HashTable {
 public:
-
+	/* Exceptions thrown by the Hash Table */
 	class ElementAlreadyExists: public std::exception {
 	};
 	class ElementNotFound: public std::exception {
@@ -14,11 +19,32 @@ public:
 	class TableIsEmpty: public std::exception {
 	};
 
+	/* Empty constructor : initializes an empty new hash table
+	 * Time complexity : O(1)
+	 */
 	HashTable();
+	/* Destructor: clears the objects in the table and deletes the data
+	 * Time complexity : O(n)
+	 */
 	~HashTable();
+	/* Inserts a new item with @data to the hash table.
+	 * @throw ElementAlreadyExists
+	 * Time Complexity: O(1) amortized in average.
+	 */
 	void insert(const T& data);
+	/* Removes an element from the Hash Table.
+	 * @throw ElementNotFound
+	 * @throw TableIsEmpty
+	 * Time Complexity: O(1) amortized in average.
+	 */
 	void remove(const T& data);
+	/* Returns a pointer to the data if found in the table, NULL otherwise.
+	 * Time Complexity: O(1) in average, O(log n) in worst case.
+	 */
 	T* find(const T& data) const;
+	/* Returns the number of elements in the Hash Table
+	 * Time Complexity: O(1)
+	 */
 	size_t size() const;
 
 private:
