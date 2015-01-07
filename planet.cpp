@@ -67,12 +67,14 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 }
 
 StatusType Planet::JoinKingdoms(int city1, int city2) {
-	City *cap1 = _kingdoms.Find(city1)._capital;
-	City *cap2 = _kingdoms.Find(city2)._capital;
+	City& root1 = _kingdoms.Find(city1);
+	City& root2 = _kingdoms.Find(city2);
+	City *cap1 = root1._capital;
+	City *cap2 = root2._capital;
 	if (city1 != cap1->_id || city2 != cap2->_id || cap1->_id == cap2->_id) {
 		return FAILURE;
 	}
-	_kingdoms.Union(city1, city2);
+	_kingdoms.Union(root1._id, root2._id);
 	City& kingdom = _kingdoms.Find(city1);
 	if (cap1->_size > cap2->_size) {
 		kingdom._capital = cap1;

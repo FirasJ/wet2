@@ -29,17 +29,17 @@ public:
 	/* Given an index x, returns the set to which element[x] belongs.
 	 * Using UpTrees and path compression
 	 * @throw IndexOutOfBounds
-	 * Time Complexity: O(log* n)
+	 * Time Complexity: O(log n)
 	 */
 	T& Find(int x);
 	/* Given an index x, returns the element[x]
 	 * Time Complexity: O(1)
 	 */
 	T& get(int x) const;
-	/* Given two indices, merges the sets to which they belong to 1 set.
+	/* Given two roots, merges the sets of given roots.
 	 * Using UpTrees and union by size.
 	 * @throw IndexOutOfBounds
-	 * Time Complexity: O(log* n)
+	 * Time Complexity: O(1)
 	 */
 	void Union(int x, int y);
 	/* class Destructor
@@ -50,6 +50,8 @@ public:
 	class Node;
 	/* Exception thrown by UnionFind */
 	class IndexOutOfBounds: public std::exception {
+	};
+	class IllegalUnion: public std::exception {
 	};
 private:
 	/* Recursive aux function that returns the index of the UpTree root
@@ -85,7 +87,7 @@ private:
 template<class T>
 UnionFind<T>::UnionFind(int n) :
 		n(n), elements(new Node*[n]) {
-	for(int i=0; i<n; i++) {
+	for (int i = 0; i < n; i++) {
 		elements[i] = NULL;
 	}
 }
@@ -125,18 +127,20 @@ void UnionFind<T>::Union(int x, int y) {
 	if (x < 0 || x >= n || y < 0 || y >= n) {
 		throw IndexOutOfBounds();
 	}
-	int xParent = find(x), yParent = find(y);
-	if (xParent == yParent) { // x,y in same set
+	if (elements[x]->parent != -1 || elements[x]->parent != -1) {
+		throw IllegalUnion();
+	}
+	if (x == y) { // x,y in same set
 		return;
 	}
-	if (elements[xParent]->size > elements[yParent]->size) {
-		elements[xParent]->size += elements[yParent]->size;
-		elements[yParent]->size = -1;
-		elements[yParent]->parent = xParent;
+	if (elements[x]->size > elements[y]->size) {
+		elements[x]->size += elements[y]->size;
+		elements[y]->size = -1;
+		elements[y]->parent = x;
 	} else {
-		elements[yParent]->size += elements[xParent]->size;
-		elements[xParent]->size = -1;
-		elements[xParent]->parent = yParent;
+		elements[y]->size += elements[x]->size;
+		elements[x]->size = -1;
+		elements[x]->parent = y;
 	}
 }
 
