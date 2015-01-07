@@ -30,6 +30,7 @@ public:
 	int Find(int x);
 	/* Given two roots, merges the sets of given roots.
 	 * Using UpTrees and union by size.
+	 * @throw IllegalUnion
 	 * @throw IndexOutOfBounds
 	 * Time Complexity: O(1)
 	 */
