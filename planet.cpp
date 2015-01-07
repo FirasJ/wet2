@@ -19,12 +19,9 @@ Planet::Planet(int n) :
 
 	for (int i = 0; i < n; ++i) {
 		cities[i] = City(i);
-		//cities[i]._capital = i;
 	}
-	//_kingdoms = UnionFind<City>(n, cities);
 	FillTree func(cities);
 	_citiesTree.inOrder(func);
-	//delete[] cities;
 }
 
 StatusType Planet::AddCitizen(int citizenID) {
@@ -48,12 +45,9 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 		return SUCCESS;
 	}
 
-	//City& c2 = _kingdoms.get(city); // city in UnionFind
 	City& c2 = _cities[city];
 	_citiesTree.remove(c2);
-	//City tmpCity(c2._id, c2._size);
 	c2._size++;
-	//City& kingdom = _kingdoms.Find(city); // kingdom of city
 	int kingdom = _kingdoms.Find(city);
 	int cap = _cities[kingdom]._capital;
 
@@ -63,22 +57,6 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 	}
 
 	_citiesTree.insert(c2);
-
-/*
-	City& tmp = _cities[city];
-	_citiesTree.remove(tmp);
-	tmp._size++;
-	int kingdomIndex = _kingdoms.Find(city);
-	City& kingdom = _cities[kingdomIndex];
-	if (kingdom._capital->_size < tmp._size) {
-		kingdom._capital = &tmp;
-	} else if (kingdom._capital->_size == tmp._size
-			&& kingdom._capital->_id > tmp._id) {
-		kingdom._capital = &tmp;
-	}
-
-	_citiesTree.insert(tmp);
-*/
 	citizen->joinCity(city);
 	return SUCCESS;
 }
@@ -95,7 +73,6 @@ StatusType Planet::JoinKingdoms(int city1, int city2) {
 		return FAILURE;
 	}
 	_kingdoms.Union(root1, root2);
-	//City& kingdom = _kingdoms.Find(city1);
 	int newKingdom = _kingdoms.Find(city1);
 	if (cap1._size > cap2._size) {
 		_cities[newKingdom]._capital = cap1._id;
@@ -105,24 +82,6 @@ StatusType Planet::JoinKingdoms(int city1, int city2) {
 		_cities[newKingdom]._capital = cap2._id;
 	}
 
-/*
-	int root1 = _kingdoms.Find(city1);
-	int root2 = _kingdoms.Find(city2);
-	City* cap1 = _cities[root1]._capital;
-	City* cap2 = _cities[root2]._capital;
-	if (city1 != cap1->_id || city2 != cap2->_id || cap1->_id == cap2->_id) {
-		return FAILURE;
-	}
-	_kingdoms.Union(root1, root2);
-	int kingdom = _kingdoms.Find(city1);
-	if (cap1->_size > cap2->_size) {
-		_cities[kingdom]._capital = cap1;
-	} else if (cap1->_size == cap2->_size) {
-		_cities[kingdom]._capital = (cap1->_id < cap2->_id) ? cap1 : cap2;
-	} else {
-		_cities[kingdom]._capital = cap2;
-	}
-	*/
 	return SUCCESS;
 }
 
@@ -133,10 +92,6 @@ StatusType Planet::GetCapital(int citizenID, int* capital) {
 		return FAILURE;
 	}
 	int city = citizen->inCity();
-	/*
-	City c = *(_kingdoms.Find(city)._capital);
-	*capital = c._id;
-	*/
 	int kingdom = _kingdoms.Find(city);
 	*capital = _cities[kingdom]._capital;
 	return SUCCESS;

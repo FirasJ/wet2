@@ -37,7 +37,13 @@ StatusType MoveToCity(void* DS, int citizenID, int city) {
 
 StatusType JoinKingdoms(void* DS, int city1, int city2) {
 	CHECK_NULL(DS);
-	return ((Planet*) DS)->JoinKingdoms(city1, city2);
+	try {
+		return ((Planet*) DS)->JoinKingdoms(city1, city2);
+	} catch (std::bad_alloc& e) {
+		return ALLOCATION_ERROR;
+	} catch (...) {
+		return FAILURE;
+	}
 }
 
 StatusType GetCapital(void* DS, int citizenID, int* capital) {
