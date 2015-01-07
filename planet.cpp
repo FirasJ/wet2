@@ -13,16 +13,18 @@ public:
 };
 
 Planet::Planet(int n) :
-		_size(n), _cities(n), _kingdoms(n) {
+		_size(n), _citiesTree(n), _kingdoms(n) {
 	City* cities = new City[n];
-	array = cities;
+	_cities = cities;
+
 	for (int i = 0; i < n; ++i) {
 		cities[i] = City(i);
-		cities[i]._capital = &cities[i];
+		//cities[i]._capital = i;
 	}
-	_kingdoms = UnionFind<City>(n, cities);
+	//_kingdoms = UnionFind<City>(n, cities);
 	FillTree func(cities);
-	_cities.inOrder(func);
+	_citiesTree.inOrder(func);
+	//delete[] cities;
 }
 
 StatusType Planet::AddCitizen(int citizenID) {
@@ -46,43 +48,81 @@ StatusType Planet::MoveToCity(int citizenID, int city) {
 		return SUCCESS;
 	}
 
-	City& c2 = _kingdoms.get(city); // city in UnionFind
-	City tmpCity(c2._id, c2._size);
+	//City& c2 = _kingdoms.get(city); // city in UnionFind
+	City& c2 = _cities[city];
+	_citiesTree.remove(c2);
+	//City tmpCity(c2._id, c2._size);
 	c2._size++;
-	City& kingdom = _kingdoms.Find(city); // kingdom of city
+	//City& kingdom = _kingdoms.Find(city); // kingdom of city
+	int kingdom = _kingdoms.Find(city);
+	int cap = _cities[kingdom]._capital;
 
-	if (kingdom._capital->_size < c2._size) {
-		kingdom._capital = &c2;
-	} else if (kingdom._capital->_size == c2._size
-			&& kingdom._capital->_id > c2._id) {
-		kingdom._capital = &c2;
+	if (_cities[cap]._size < c2._size || (_cities[cap]._size == c2._size
+			&& _cities[cap]._id > city)) {
+		_cities[kingdom]._capital = city;
 	}
 
-	_cities.remove(tmpCity);
-	tmpCity._size++;
-	_cities.insert(tmpCity);
+	_citiesTree.insert(c2);
 
+/*
+	City& tmp = _cities[city];
+	_citiesTree.remove(tmp);
+	tmp._size++;
+	int kingdomIndex = _kingdoms.Find(city);
+	City& kingdom = _cities[kingdomIndex];
+	if (kingdom._capital->_size < tmp._size) {
+		kingdom._capital = &tmp;
+	} else if (kingdom._capital->_size == tmp._size
+			&& kingdom._capital->_id > tmp._id) {
+		kingdom._capital = &tmp;
+	}
+
+	_citiesTree.insert(tmp);
+*/
 	citizen->joinCity(city);
 	return SUCCESS;
 }
 
 StatusType Planet::JoinKingdoms(int city1, int city2) {
-	City& root1 = _kingdoms.Find(city1);
-	City& root2 = _kingdoms.Find(city2);
-	City *cap1 = root1._capital;
-	City *cap2 = root2._capital;
+
+	int root1 = _kingdoms.Find(city1);
+	int root2 = _kingdoms.Find(city2);
+
+	City& cap1 = _cities[_cities[root1]._capital];
+	City& cap2 = _cities[_cities[root2]._capital];
+
+	if (city1 != cap1._id || city2 != cap2._id || cap1._id == cap2._id) {
+		return FAILURE;
+	}
+	_kingdoms.Union(root1, root2);
+	//City& kingdom = _kingdoms.Find(city1);
+	int newKingdom = _kingdoms.Find(city1);
+	if (cap1._size > cap2._size) {
+		_cities[newKingdom]._capital = cap1._id;
+	} else if (cap1._size == cap2._size) {
+		_cities[newKingdom]._capital = (cap1._id < cap2._id) ? cap1._id : cap2._id;
+	} else {
+		_cities[newKingdom]._capital = cap2._id;
+	}
+
+/*
+	int root1 = _kingdoms.Find(city1);
+	int root2 = _kingdoms.Find(city2);
+	City* cap1 = _cities[root1]._capital;
+	City* cap2 = _cities[root2]._capital;
 	if (city1 != cap1->_id || city2 != cap2->_id || cap1->_id == cap2->_id) {
 		return FAILURE;
 	}
-	_kingdoms.Union(root1._id, root2._id);
-	City& kingdom = _kingdoms.Find(city1);
+	_kingdoms.Union(root1, root2);
+	int kingdom = _kingdoms.Find(city1);
 	if (cap1->_size > cap2->_size) {
-		kingdom._capital = cap1;
+		_cities[kingdom]._capital = cap1;
 	} else if (cap1->_size == cap2->_size) {
-		kingdom._capital = (cap1->_id < cap2->_id) ? cap1 : cap2;
+		_cities[kingdom]._capital = (cap1->_id < cap2->_id) ? cap1 : cap2;
 	} else {
-		kingdom._capital = cap2;
+		_cities[kingdom]._capital = cap2;
 	}
+	*/
 	return SUCCESS;
 }
 
@@ -93,8 +133,12 @@ StatusType Planet::GetCapital(int citizenID, int* capital) {
 		return FAILURE;
 	}
 	int city = citizen->inCity();
+	/*
 	City c = *(_kingdoms.Find(city)._capital);
 	*capital = c._id;
+	*/
+	int kingdom = _kingdoms.Find(city);
+	*capital = _cities[kingdom]._capital;
 	return SUCCESS;
 }
 
@@ -106,7 +150,7 @@ StatusType Planet::SelectCity(int k, int* city) {
 	if (k >= _size) {
 		return FAILURE;
 	}
-	*city = _cities.select(k + 1)._id;
+	*city = _citiesTree.select(k + 1)._id;
 	return SUCCESS;
 }
 
@@ -125,20 +169,20 @@ public:
 StatusType Planet::GetCitiesBySize(int results[]) {
 	assert(results);
 	TreeToArray convert(results);
-	_cities.inOrder(convert);
+	_citiesTree.inOrder(convert);
 	return SUCCESS;
 }
 
 Planet::~Planet() {
-	delete[] array;
+	delete[] _cities;
 }
 
 Planet::City::City() :
-		_id(-1), _size(0), _capital(NULL) {
+		_id(-1), _size(0), _capital(-1) {
 }
 
 Planet::City::City(int id, int size) :
-		_id(id), _size(size), _capital(NULL) {
+		_id(id), _size(size), _capital(_id) {
 }
 
 bool operator<(const Planet::City& city1, const Planet::City& city2) {

@@ -8,34 +8,26 @@
  * get(x) : Given an index x, returns the element[i].
  * Union(x, y): Given two indices, merges the sets to which they belong to 1 set.
  * This class is implemented using UpTrees (as arrays), Union by size and path compression
- * Therefore, Find and Union takes O(log* n)
+ * Therefore, Find and Union takes O(log* n) amortized time.
  */
 
 template<class T>
 class UnionFind {
 public:
-	/* Initializes an empty UnionFind class with size n
-	 * Time Complexity: O(n)
+	/* Initializes a UnionFind class with size n using T(i).
+	 * Time Complexity: O(n).
 	 */
 	explicit UnionFind(int n);
 	/* Initializes a UnionFind class with the array data and size n
-	 * Time Complexity: O(n)
+	 * Time Complexity: O(n).
 	 */
 	UnionFind(int n, T* data);
-	/* Operator assignement
-	 * Time Complexity: O(n)
-	 */
-	UnionFind& operator=(const UnionFind& uf);
-	/* Given an index x, returns the set to which element[x] belongs.
-	 * Using UpTrees and path compression
+	/* Recursive function that returns the index of the UpTree root
+	 * to which element[x] belongs.
 	 * @throw IndexOutOfBounds
 	 * Time Complexity: O(log n)
 	 */
-	T& Find(int x);
-	/* Given an index x, returns the element[x]
-	 * Time Complexity: O(1)
-	 */
-	T& get(int x) const;
+	int Find(int x);
 	/* Given two roots, merges the sets of given roots.
 	 * Using UpTrees and union by size.
 	 * @throw IndexOutOfBounds
@@ -54,10 +46,6 @@ public:
 	class IllegalUnion: public std::exception {
 	};
 private:
-	/* Recursive aux function that returns the index of the UpTree root
-	 * to which element[x] belongs.
-	 */
-	int find(int x);
 
 	int n;			// number of Nodes (elements)
 	Node** elements;	// array of nodes
@@ -88,7 +76,8 @@ template<class T>
 UnionFind<T>::UnionFind(int n) :
 		n(n), elements(new Node*[n]) {
 	for (int i = 0; i < n; i++) {
-		elements[i] = NULL;
+		T t(i);
+		elements[i] = new Node(1, -1, t);
 	}
 }
 
@@ -101,25 +90,15 @@ UnionFind<T>::UnionFind(int n, T* data) :
 }
 
 template<class T>
-T& UnionFind<T>::get(int x) const {
-	return elements[x]->data;
-}
-
-template<class T>
-int UnionFind<T>::find(int x) {
+int UnionFind<T>::Find(int x) {
 	if (x < 0 || x >= n) {
 		throw IndexOutOfBounds();
 	}
 	if (elements[x]->parent == -1) {
 		return x;
 	} else {
-		return elements[x]->parent = find(elements[x]->parent);
+		return elements[x]->parent = Find(elements[x]->parent);
 	}
-}
-
-template<class T>
-T& UnionFind<T>::Find(int x) {
-	return elements[find(x)]->data;
 }
 
 template<class T>
@@ -142,37 +121,6 @@ void UnionFind<T>::Union(int x, int y) {
 		elements[x]->size = -1;
 		elements[x]->parent = y;
 	}
-}
-
-template<class T>
-UnionFind<T>& UnionFind<T>::operator =(const UnionFind& uf) {
-	if (this == &uf) {
-		return *this;
-	}
-	Node** nodes = new Node*[n];
-	try {
-		for (int i = 0; i < uf.n; i++) {
-			nodes[i] = new Node(*(uf.elements[i]));
-		}
-	} catch (...) {
-		for (int i = 0; i < uf.n; i++) {
-			if (nodes[i] != NULL) {
-				delete nodes[i];
-			}
-		}
-		delete[] nodes;
-		throw;
-	}
-	for (int i = 0; i < n; i++) {
-		if (elements[i] != NULL) {
-			delete elements[i];
-		}
-
-	}
-	delete[] elements;
-	elements = nodes;
-	n = uf.n;
-	return *this;
 }
 
 template<class T>

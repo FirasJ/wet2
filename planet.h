@@ -115,10 +115,10 @@ public:
 
 private:
 	int _size;
-	Tree<City> _cities;
+	Tree<City> _citiesTree;
 	HashTable<Citizen> _citizens;
 	UnionFind<City> _kingdoms;
-	City* array;
+	City* _cities;
 
 };
 
@@ -143,7 +143,8 @@ public:
 private:
 	int _id;
 	int _size;
-	City* _capital;
+	//City* _capital;
+	int _capital;
 };
 
 bool operator!=(const typename Planet::City& city1, const typename Planet::City& city2);
